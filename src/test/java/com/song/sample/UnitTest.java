@@ -1,6 +1,7 @@
 package com.song.sample;
 
 
+import com.song.sample.model.Person;
 import com.song.sample.service.SampleService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +20,7 @@ public class UnitTest {
 
     @Test
     public void hello2() throws Exception {
-        when(mockSampleService.getName()).thenReturn("JM");
+        when(mockSampleService.getPerson()).thenReturn(new Person("JIMIN", 33));
     }
 
 }
