@@ -1,9 +1,12 @@
 package com.song.sample.filter;
 
+import com.song.sample.filter.wrapper.ModifyRequestWrapper;
 import com.song.sample.util.UuidUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.client.support.HttpRequestWrapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
@@ -33,8 +36,9 @@ public class RequestResponseLoggingFilter implements Filter {
         String uuid = UuidUtil.createUuid();
 
         HttpServletRequest req = (HttpServletRequest) request;
-        LOG.info("Request UUID : {}, REQUEST_METHOD : {}, REQUEST_URI: {}, REQUEST_HEADER : {}",
-                 uuid, req.getMethod(), req.getRequestURI(), getRequestHeaderInfo(req));
+        ModifyRequestWrapper modifyRequestWrapper = new ModifyRequestWrapper(req);
+        LOG.info("Request UUID : {}, REQUEST_METHOD : {}, REQUEST_URI : {}, REQUEST_BODY : {}, REQUEST_HEADER : {}",
+                 uuid, req.getMethod(), req.getRequestURI(), modifyRequestWrapper.getRequestBody(), getRequestHeaderInfo(req));
 
         HttpServletRequest requestToCache = new ContentCachingRequestWrapper(req);
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper((HttpServletResponse)response);
