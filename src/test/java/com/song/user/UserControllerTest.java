@@ -45,4 +45,12 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.age", is(equalTo(3))));
 
     }
+
+    @Test
+    public void test() throws Exception {
+        mockMvc.perform(get("/test"))
+                .andExpect(status().is5xxServerError())
+                .andExpect(jsonPath("$.statusCode", is(equalTo("500"))))
+                .andExpect(jsonPath("$.message", is(equalTo("GET http://localhost/test Test Exception"))));
+    }
 }

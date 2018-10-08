@@ -1,5 +1,6 @@
 package com.song.sample.controller;
 
+import com.song.sample.exception.TestException;
 import com.song.sample.model.Person;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +18,10 @@ public class UserController {
     @PostMapping("/person/create")
     public Person create(@RequestBody Person person) {
         return person;
+    }
 
+    @GetMapping("/test")
+    public void test() {
+        throw new TestException("Test Exception");
     }
 }

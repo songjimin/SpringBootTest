@@ -1,12 +1,10 @@
 package com.song.sample.filter;
 
-import com.song.sample.filter.wrapper.ModifyRequestWrapper;
 import com.song.sample.util.UuidUtil;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.client.support.HttpRequestWrapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
@@ -14,8 +12,10 @@ import org.springframework.web.util.WebUtils;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 
 @Component
@@ -35,12 +35,13 @@ public class RequestResponseLoggingFilter implements Filter {
 
         String uuid = UuidUtil.createUuid();
 
-        HttpServletRequest req = (HttpServletRequest) request;
-        ModifyRequestWrapper modifyRequestWrapper = new ModifyRequestWrapper(req);
-        LOG.info("Request UUID : {}, REQUEST_METHOD : {}, REQUEST_URI : {}, REQUEST_BODY : {}, REQUEST_HEADER : {}",
-                 uuid, req.getMethod(), req.getRequestURI(), modifyRequestWrapper.getRequestBody(), getRequestHeaderInfo(req));
+        HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 
-        HttpServletRequest requestToCache = new ContentCachingRequestWrapper(req);
+        LOG.info("Request UUID : {}, REQUEST_METHOD : {}, REQUEST_URI : {}, REQUEST_BODY : {}, REQUEST_HEADER : {}",
+                 uuid, httpServletRequest.getMethod(), httpServletRequest.getRequestURI(),
+                 getRequestBody(httpServletRequest), getRequestHeaderInfo(httpServletRequest));
+
+        HttpServletRequest requestToCache = new ContentCachingRequestWrapper(httpServletRequest);
         ContentCachingResponseWrapper responseWrapper = new ContentCachingResponseWrapper((HttpServletResponse)response);
 
         chain.doFilter(requestToCache, responseWrapper);
@@ -55,6 +56,14 @@ public class RequestResponseLoggingFilter implements Filter {
     public void destroy() {
         LOG.warn("Destructing filter :{}", this);
     }
+
+    private String getRequestBody(HttpServletRequest httpServletRequest) throws IOException {
+        HttpServletRequestWrapper httpServletRequestWrapper = new HttpServletRequestWrapper(httpServletRequest);
+        InputStream is = httpServletRequestWrapper.getInputStream();
+        byte[] byteArray = IOUtils.toByteArray(is);
+        return new String(byteArray);
+    }
+
 
     private String getRequestHeaderInfo(HttpServletRequest httpServletRequest) {
 

@@ -18,10 +18,6 @@ public class SampleController {
         return sampleService.getPerson();
     }
 
-    @GetMapping("/test")
-    public void test() {
-        throw new TestException("Test Exception");
-    }
 
 
 }
