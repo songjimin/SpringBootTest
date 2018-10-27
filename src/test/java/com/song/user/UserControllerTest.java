@@ -53,4 +53,6 @@ public class UserControllerTest {
                 .andExpect(jsonPath("$.statusCode", is(equalTo("500"))))
                 .andExpect(jsonPath("$.message", is(equalTo("GET http://localhost/test Test Exception"))));
     }
+
+
 }
